@@ -30,10 +30,29 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Prose } from "@/components/ui/prose";
+import { MathJaxContext, MathJax } from "better-react-mathjax";
 
 function formatAnswerText(answerText) {
   return answerText;
 }
+
+const mathJaxConfig = {
+  loader: { load: ["input/tex", "output/chtml"] },
+  tex: {
+    inlineMath: [
+      ["$", "$"],
+      ["\\(", "\\)"],
+    ],
+    displayMath: [
+      ["$$", "$$"],
+      ["\\[", "\\]"],
+    ],
+    macros: {},
+  },
+  svg: {
+    fontCache: "global",
+  },
+};
 
 const QuestionArea = ({ open, setOpen, title, initalData, mode }) => {
   const totalQuestions = initalData.length;
@@ -41,107 +60,114 @@ const QuestionArea = ({ open, setOpen, title, initalData, mode }) => {
   const [answerShown, setAnswerShown] = useState(false);
 
   console.log(initalData[questionId]?.html);
+  console.log("\n\n");
 
   return (
-    <DialogRoot
-      lazyMount
-      open={open}
-      onOpenChange={(e) => setOpen(e.open)}
-      size="cover"
-      scrollBehavior="inside"
-    >
-      {/* <DialogTrigger asChild>
+    <MathJaxContext version={3} config={mathJaxConfig}>
+      <DialogRoot
+        lazyMount
+        open={open}
+        onOpenChange={(e) => setOpen(e.open)}
+        size="cover"
+        scrollBehavior="inside"
+      >
+        {/* <DialogTrigger asChild>
         <Button variant="outline">Open</Button>
       </DialogTrigger> */}
 
-      <DialogContent w="100%">
-        <DialogHeader>
-          <DialogTitle>
-            {title} - {mode.toUpperCase()} Questions
-          </DialogTitle>
-          <DialogCloseTrigger />
-        </DialogHeader>
-        <DialogBody w="100%">
-          <Center>
-            <HStack>
-              <Prose w="100%" h="100%" mb="auto">
-                <div>
-                  {/* Add styles specifically for images */}
-                  <style>
-                    {`
-          img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            background: white;
-          }
-        `}
-                  </style>
-                  {/* Insert HTML content */}
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: initalData[questionId]?.html,
-                    }}
+        <DialogContent w="100%">
+          <DialogHeader>
+            <DialogTitle>
+              {title} - {mode.toUpperCase()} Questions
+            </DialogTitle>
+            <DialogCloseTrigger />
+          </DialogHeader>
+          <DialogBody w="100%">
+            <Center>
+              <HStack>
+                <Prose w="100%" h="100%" mb="auto">
+                  <div>
+                    {/* Add styles specifically for images */}
+                    <style>
+                      {`
+                        img {
+                            max-width: 100%;
+                            height: auto;
+                            display: block;
+                            margin: 10px 0;
+                            border: 1px solid #ddd;
+                            border-radius: 5px;
+                            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                            background: white;
+                        }
+                        `}
+                    </style>
+                    {/* Insert HTML content */}
+                    <MathJax>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: initalData[questionId]?.html,
+                        }}
+                      />
+                    </MathJax>
+                  </div>
+                </Prose>
+                <VStack mb="auto" alignItems="start" mt={4} ml={44}>
+                  <CheckboxCard
+                    label="Show Correct Answer"
+                    description={
+                      answerShown ? (
+                        <Prose w="100%" h="100%">
+                          <MathJax>
+                            {initalData[questionId]
+                              ? formatAnswerText(initalData[questionId]?.answer)
+                              : ""}
+                          </MathJax>
+                        </Prose>
+                      ) : (
+                        "Whenever you're ready... click"
+                      )
+                    }
+                    maxW="500px"
+                    onChange={() => setAnswerShown(!answerShown)}
                   />
-                </div>
-              </Prose>
-              <VStack mb="auto" alignItems="start" mt={4} ml={44}>
-                <CheckboxCard
-                  label="Show Correct Answer"
-                  description={
-                    answerShown ? (
-                      <Prose w="100%" h="100%">
-                        {initalData[questionId]
-                          ? formatAnswerText(initalData[questionId]?.answer)
-                          : ""}
-                      </Prose>
-                    ) : (
-                      "Whenever you're ready... click"
-                    )
-                  }
-                  maxW="500px"
-                  onChange={() => setAnswerShown(!answerShown)}
-                />
-              </VStack>
-            </HStack>
-          </Center>
-        </DialogBody>
-        <DialogFooter>
-          <DialogActionTrigger asChild>
-            <Button
-              variant="subtle"
-              colorPalette="teal"
-              size="lg"
-              disabled={questionId - 1 < 0}
-              onClick={() => {
-                setAnswerShown(false);
-                setQuestionId(questionId - 1);
-              }}
-            >
-              Previous
-            </Button>
-          </DialogActionTrigger>
-          <DialogActionTrigger asChild>
-            <Button
-              variant="subtle"
-              colorPalette="teal"
-              size="lg"
-              disabled={questionId + 1 == totalQuestions}
-              onClick={() => {
-                setAnswerShown(false);
-                setQuestionId(questionId + 1);
-              }}
-            >
-              Next
-            </Button>
-          </DialogActionTrigger>
-        </DialogFooter>
-      </DialogContent>
-    </DialogRoot>
+                </VStack>
+              </HStack>
+            </Center>
+          </DialogBody>
+          <DialogFooter>
+            <DialogActionTrigger asChild>
+              <Button
+                variant="subtle"
+                colorPalette="teal"
+                size="lg"
+                disabled={questionId - 1 < 0}
+                onClick={() => {
+                  setAnswerShown(false);
+                  setQuestionId(questionId - 1);
+                }}
+              >
+                Previous
+              </Button>
+            </DialogActionTrigger>
+            <DialogActionTrigger asChild>
+              <Button
+                variant="subtle"
+                colorPalette="teal"
+                size="lg"
+                disabled={questionId + 1 == totalQuestions}
+                onClick={() => {
+                  setAnswerShown(false);
+                  setQuestionId(questionId + 1);
+                }}
+              >
+                Next
+              </Button>
+            </DialogActionTrigger>
+          </DialogFooter>
+        </DialogContent>
+      </DialogRoot>
+    </MathJaxContext>
   );
 };
 
