@@ -3,6 +3,8 @@ from scrape_main import get_main_page_data
 from scrape_topic import get_questions
 from flask_cors import CORS
 
+import json
+
 app = Flask(__name__)
 CORS(app)
 
@@ -23,6 +25,14 @@ def topic():
     data = request.get_json()
     url = data["url"]
     return get_questions(url)
+
+# Quizziz Codes (AP Bio Only)
+@app.get('/quizizz')
+def quizizz():
+    with open('quizizz_codes.json', 'r') as f:
+        data = json.load(f)
+
+    return data
 
 
 if __name__ == "__main__":
