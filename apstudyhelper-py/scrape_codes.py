@@ -45,8 +45,10 @@ def separate_title_code(text):
         cod = text[idx:idx+c]
         cursor = idx + c
 
+        # cut out artifiacts
         txt = txt.replace('\u200b', '')
         txt = txt.replace(':', ': ')
+        txt = txt.replace('Insta-Review', '')
 
         if len(txt) > 0 and txt[-1] == ' ':
             txt = txt[:-1]

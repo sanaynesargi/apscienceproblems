@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/dialog";
 import { Prose } from "@/components/ui/prose";
 import { MathJaxContext, MathJax } from "better-react-mathjax";
+import { useRouter } from "next/navigation";
 
 function formatAnswerText(answerText) {
   return answerText;
@@ -58,9 +59,6 @@ const QuestionArea = ({ open, setOpen, title, initalData, mode }) => {
   const totalQuestions = initalData.length;
   const [questionId, setQuestionId] = useState(0);
   const [answerShown, setAnswerShown] = useState(false);
-
-  console.log(initalData[questionId]?.html);
-  console.log("\n\n");
 
   return (
     <MathJaxContext version={3} config={mathJaxConfig}>
@@ -225,10 +223,12 @@ const TopicContainer = ({ topicName, href, mode }: any) => {
 
 export default function MyComponent() {
   const [selectedChapter, setSelectedChapter] = useState(0);
-  const [selectedSubject, setSelectedSubject] = useState("biology");
+  const [selectedSubject, setSelectedSubject] = useState("chemistry");
   const [mode, setMode] = useState("mcq");
   const [topics, setTopics] = useState([]);
   const [mapIndices, setMapIndices] = useState<any>({});
+
+  const router = useRouter();
 
   useEffect(() => {
     if (topics.length == 0) {
@@ -275,8 +275,8 @@ export default function MyComponent() {
                 setSelectedSubject(e.target.value);
               }}
             >
-              <option value="biology">Biology</option>
-              <option value="chemistry">Chemistry</option>
+              <option value="chemistry">AP Chemistry</option>
+              <option value="biology">AP Biology</option>
             </NativeSelectField>
           </NativeSelectRoot>
 
@@ -344,6 +344,17 @@ export default function MyComponent() {
               })}
             </NativeSelectField>
           </NativeSelectRoot>
+
+          {selectedSubject == "biology" ? (
+            <Button
+              colorPalette="green"
+              variant="solid"
+              onClick={() => router.push("/more-bio-practice")}
+              marginLeft={"auto"}
+            >
+              More Bio Practice
+            </Button>
+          ) : null}
         </HStack>
       </Box>
 
