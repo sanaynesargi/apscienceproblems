@@ -327,8 +327,8 @@ export default function MyComponent() {
                 );
               }}
             >
-              {topics.map((e, i) => {
-                if (!e.p_content.includes("Unit")) {
+              {topics?.map((e, i) => {
+                if (!e.p_content?.includes("Unit")) {
                   return;
                 }
 
